@@ -7,6 +7,9 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/patrick-cuppi/Gateway-Payment-Golang/internal/repository"
+	"github.com/patrick-cuppi/Gateway-Payment-Golang/internal/service"
+	"github.com/patrick-cuppi/Gateway-Payment-Golang/internal/web/server"
 )
 
 func getEnv(key, defaultValue string) string {
@@ -38,4 +41,14 @@ func main() {
 	}
 	defer db.Close()
 
+	accountRepository := repository.NewAccountRepository(db)
+	accountService := service.NewAccountService(accountRepository)
+
+	port := getEnv("HTTP_PORT", "8080")
+	svr := server.NewServer(accountService, port)
+	svr.ConfigureRoutes()
+
+	if err := svr.Start(); err != nil {
+		log.Fatal("Error starting server", err)
+	}
 }
