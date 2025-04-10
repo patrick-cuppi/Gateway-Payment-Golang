@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"math/rand"
 	"time"
 
 	"github.com/google/uuid"
@@ -52,4 +53,32 @@ func NewInvoice(accountID string, amount float64, description string, paymentTyp
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
 	}, nil
+}
+
+func (i *Invoice) Process() error {
+	if i.Amount > 10000 {
+		return nil
+	}
+
+	randomSource := rand.New(rand.NewSource(time.Now().Unix()))
+	var newStatus Status
+
+	if randomSource.Float64() <= 0.7 {
+		newStatus = StatusApproved
+	} else {
+		newStatus = StatusRejected
+	}
+
+	i.Status = newStatus
+	return nil
+}
+
+func (i *Invoice) UpdateStatus(newStatus Status) error {
+	if i.Status != StatusPending {
+		return ErrInvalidStatus
+	}
+
+	i.Status = newStatus
+	i.UpdatedAt = time.Now()
+	return nil
 }
