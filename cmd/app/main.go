@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pg"
+	_ "github.com/lib/pq"
 	"github.com/patrick-cuppi/Gateway-Payment-Golang/internal/repository"
 	"github.com/patrick-cuppi/Gateway-Payment-Golang/internal/service"
 	"github.com/patrick-cuppi/Gateway-Payment-Golang/internal/web/server"
