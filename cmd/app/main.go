@@ -45,11 +45,14 @@ func main() {
 	accountRepository := repository.NewAccountRepository(db)
 	accountService := service.NewAccountService(accountRepository)
 
-	port := getEnv("HTTP_PORT", "8080")
-	svr := server.NewServer(accountService, port)
-	svr.ConfigureRoutes()
+	invoiceRepository := repository.NewInvoiceRepository(db)
+	invoiceService := service.NewInvoiceService(invoiceRepository, *accountService)
 
-	if err := svr.Start(); err != nil {
+	port := getEnv("HTTP_PORT", "8080")
+	srv := server.NewServer(accountService, invoiceService, port)
+	srv.ConfigureRoutes()
+
+	if err := srv.Start(); err != nil {
 		log.Fatal("Error starting server", err)
 	}
 }
