@@ -54,3 +54,39 @@ func (r *InvoiceRepository) FindByID(id string) (*domain.Invoice, error) {
 
 	return &invoice, nil
 }
+
+func (r *InvoiceRepository) FindByAccountID(accountID string) ([]*domain.Invoice, error) {
+	rows, err := r.db.Query(`
+		SELECT id, account_id, amount, status, description, payment_type, card_last_digits, created_at, updated_at
+		FROM invoices
+		WHERE account_id = $1
+	`, accountID)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var invoices []*domain.Invoice
+	for rows.Next() {
+		var invoice domain.Invoice
+		err := rows.Scan(
+			&invoice.ID,
+			&invoice.AccountID,
+			&invoice.Amount,
+			&invoice.Status,
+			&invoice.Description,
+			&invoice.PaymentType,
+			&invoice.CardLastDigits,
+			&invoice.CreatedAt,
+			&invoice.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		invoices = append(invoices, &invoice)
+	}
+
+	return invoices, nil
+}
