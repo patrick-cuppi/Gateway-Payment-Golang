@@ -90,3 +90,24 @@ func (r *InvoiceRepository) FindByAccountID(accountID string) ([]*domain.Invoice
 
 	return invoices, nil
 }
+
+func (r *InvoiceRepository) UpdateStatus(invoice *domain.Invoice) error {
+	rows, err := r.db.Exec(
+		"UPDATE invoices SET status = $1, updated_at = $2 WHERE id = $3",
+		invoice.Status, invoice.UpdatedAt, invoice.ID,
+	)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := rows.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return domain.ErrInvoiceNotFound
+	}
+
+	return nil
+}
