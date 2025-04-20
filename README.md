@@ -9,6 +9,51 @@ O Gateway de Pagamento é um sistema distribuído composto por:
 - API Gateway em Go (este repositório) com **Apache Kafka** para comunicação assíncrona
 - [Sistema de Antifraude em Nest.js](https://github.com/patrick-cuppi/Gateway-Payment-Nest.js)
 
+### Componentes do Sistema
+
+- **Frontend (Next.js)**
+  - Interface do usuário para gerenciamento de contas e processamento de pagamentos
+  - Desenvolvido com Next.js para garantir performance e boa experiência do usuário
+
+- **Gateway (Go)**
+  - Sistema principal de processamento de pagamentos
+  - Gerencia contas, transações e coordena o fluxo de pagamentos
+  - Publica eventos de transação no Kafka para análise de fraude
+
+- **Apache Kafka**
+  - Responsável pela comunicação assíncrona entre API Gateway e Antifraude
+  - Garante confiabilidade na troca de mensagens entre os serviços
+  - Tópicos específicos para transações e resultados de análise
+
+- **Antifraude (Nest.js)**
+  - Consome eventos de transação do Kafka
+  - Realiza análise em tempo real para identificar possíveis fraudes
+  - Publica resultados da análise de volta no Kafka
+
+## Fluxo de Comunicação
+
+1. Frontend realiza requisições para a API Gateway via REST
+2. Gateway processa as requisições e publica eventos de transação no Kafka
+3. Serviço Antifraude consome os eventos e realiza análise em tempo real
+4. Resultados das análises são publicados de volta no Kafka
+5. Gateway consome os resultados e finaliza o processamento da transação
+
+## Ordem de Execução dos Serviços
+
+Para executar o projeto completo, os serviços devem ser iniciados na seguinte ordem:
+
+1. **API Gateway (Go)** - Deve ser executado primeiro pois configura a rede Docker
+2. **Serviço Antifraude (Nest.js)** - Depende do Kafka configurado pelo Gateway
+3. **Frontend (Next.js)** - Interface de usuário que se comunica com a API Gateway
+
+## Instruções Detalhadas
+
+Cada componente do sistema possui instruções específicas de instalação e configuração em seus repectivos repositórios:
+
+- **Serviço Antifraude**: Consulte o README na pasta do projeto [(clique aqui)](https://github.com/patrick-cuppi/Gateway-Payment-Nest.js).
+- **Frontend**: Consulte o README na pasta do projeto [(clique aqui)](https://github.com/patrick-cuppi/Gateway-Payment-Next.js).
+
+> **Importante**: É fundamental seguir a ordem de execução mencionada acima, pois cada serviço depende dos anteriores para funcionar corretamente.
 
 ## Arquitetura da aplicação
 [Visualize a arquitetura completa aqui](https://link.excalidraw.com/readonly/Nrz6WjyTrn7IY8ZkrZHy)
